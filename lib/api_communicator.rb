@@ -13,10 +13,31 @@ require 'pry'
 #  and that method will do some nice presentation stuff: puts out a list
 #  of movies by title. play around with puts out other info about a given film.
 
+def get_all_characters
+  characters = []
+  x = 1
+  9.times do
+    all_characters = RestClient.get("http://www.swapi.co/api/people/?page=#{x}")
+    char = JSON.parse(all_characters)
+    characters << char
+    x += 1
+  end
+  characters
+end
+
+def parse_all_characters
+  characters = get_all_characters
+  char_array = []
+  characters.each do |hash|
+    char_array << hash["results"].flatten
+  end
+  char_array.flatten
+end
+
+
 def find_specific_character(character)
-  all_characters = RestClient.get('http://www.swapi.co/api/people/')
-  character_hash = JSON.parse(all_characters)
-  character_hash["results"].find {|char_hash| char_hash["name"] == character}
+  character_array = parse_all_characters
+  character_array.find {|char_hash| char_hash["name"] == character}
 end
 
 def get_character_movies_from_api(character)
@@ -52,16 +73,20 @@ def parse_character_movies(films_hash)
 end
 
 def show_character_info(character)
-  character_hash = find_specific_character(character)
-  puts "Name: #{character_hash["name"]}"
-  puts "Height: #{character_hash["height"]} Centimeters"
-  puts "Weight: #{character_hash["mass"]} Kilograms"
-  puts "Hair Color: #{character_hash["hair_color"]}"
-  puts "Skin Tone: #{character_hash["skin_color"]}"
-  puts "Eye Color: #{character_hash["eye_color"]}"
-  puts "Birth Year: #{character_hash["birth_year"]}"
-  puts "Gender: #{character_hash["gender"]}"
-  puts
+  if find_specific_character(character)== nil
+    puts "No Results Founds!"
+  else
+    character_hash = find_specific_character(character)
+    puts "Name: #{character_hash["name"]}"
+    puts "Height: #{character_hash["height"]} Centimeters"
+    puts "Weight: #{character_hash["mass"]} Kilograms"
+    puts "Hair Color: #{character_hash["hair_color"]}"
+    puts "Skin Tone: #{character_hash["skin_color"]}"
+    puts "Eye Color: #{character_hash["eye_color"]}"
+    puts "Birth Year: #{character_hash["birth_year"]}"
+    puts "Gender: #{character_hash["gender"]}"
+    puts
+  end
 end
 
 def show_character_movies(character)
@@ -104,6 +129,7 @@ def parse_film(film_title)
     puts
   end
 end
+
 ## BONUS
 
 # that `get_character_movies_from_api` method is probably pretty long. Does it do more than one job?
