@@ -13,6 +13,12 @@ require 'pry'
 #  and that method will do some nice presentation stuff: puts out a list
 #  of movies by title. play around with puts out other info about a given film.
 
+def find_specific_character(character)
+  all_characters = RestClient.get('http://www.swapi.co/api/people/')
+  character_hash = JSON.parse(all_characters)
+  character_hash["results"].find {|char_hash| char_hash["name"] == character}
+end
+
 def get_character_movies_from_api(character)
   our_character = find_specific_character(character)
   films = our_character["films"]
@@ -20,12 +26,6 @@ def get_character_movies_from_api(character)
     film_data=RestClient.get(film)
     film_hash = JSON.parse(film_data)
   end
-end
-
-def find_specific_character(character)
-  all_characters = RestClient.get('http://www.swapi.co/api/people/')
-  character_hash = JSON.parse(all_characters)
-  character_hash["results"].find {|char_hash| char_hash["name"] == character}
 end
 
 def parse_character_movies(films_hash)
@@ -49,6 +49,19 @@ def parse_character_movies(films_hash)
     puts "Released on #{film_hash["release_date"]}"
     puts
   end
+end
+
+def show_character_info(character)
+  character_hash = find_specific_character(character)
+  puts "Name: #{character_hash["name"]}"
+  puts "Height: #{character_hash["height"]} Centimeters"
+  puts "Weight: #{character_hash["mass"]} Kilograms"
+  puts "Hair Color: #{character_hash["hair_color"]}"
+  puts "Skin Tone: #{character_hash["skin_color"]}"
+  puts "Eye Color: #{character_hash["eye_color"]}"
+  puts "Birth Year: #{character_hash["birth_year"]}"
+  puts "Gender: #{character_hash["gender"]}"
+  puts
 end
 
 def show_character_movies(character)

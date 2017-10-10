@@ -12,7 +12,13 @@ loop do
     show_film(film)
   elsif response == "C"
     character = get_character_from_user
-    show_character_movies(character)
+    puts "Type P for personal information or L for list of movies"
+    response = gets.chomp
+    if response == "P"
+      show_character_info(character)
+    elsif response == "L"
+      show_character_movies(character)
+    end
   elsif response == "exit"
     break
   end
